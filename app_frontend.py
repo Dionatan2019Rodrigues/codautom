@@ -527,4 +527,4 @@ with aba_gerador:
                     st.error("❌ Erro de conexão! Certifique-se de que o FastAPI está rodando na rede.")
 
 st.markdown("<br><hr>", unsafe_allow_html=True)
-st.markdown("<div style='text-align: center; color: #666666; padding: 10px; font-size: 14px;'>⚡ <b>Raichu Pro V2.1.0 (FastAPI Edition)</b> | Desenvolvido por Julio Maia 👨‍💻</div>", unsafe_allow_html=True)
+st.markdown("<div style='text-align: center; color: #666666; padding: 10px; font-size: 14px;'>⚡ <b>Raichu Pro V2.1.0 (FastAPI Edition)</b> | Alterado por Dionatan Rodrigues</div>", unsafe_allow_html=True)
