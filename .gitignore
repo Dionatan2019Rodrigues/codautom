@@ -1,0 +1,19 @@
+# Configurações locais do editor e ambiente
+.vscode/
+.devcontainer/
+
+# Arquivos temporários e cache do Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Ambientes virtuais locais (caso crie algum no futuro)
+.venv/
+venv/
+env/
+
+# Cache específico do Streamlit
+.streamlit/config.toml
+.streamlit/secrets.toml
