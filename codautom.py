@@ -600,16 +600,35 @@ with aba_gerador:
                     nome_pasta_principal = re.sub(r'[\\/*?:"<>|]', "", nome_pasta_principal)
 
                     arquivos_na_pasta = [f for f in os.listdir(pasta_alvo) if not f.startswith("~$")]
+                    pasta_modelos_raiz = os.path.join(os.getcwd(), "Modelos")
+                    arquivos_raiz = []
+                    if os.path.isdir(pasta_modelos_raiz):
+                        arquivos_raiz = [
+                            f for f in os.listdir(pasta_modelos_raiz)
+                            if not f.startswith("~$") and os.path.isfile(os.path.join(pasta_modelos_raiz, f))
+                        ]
                     keywords_individuais = ["ch_dentro", "ch_fora", "conflito", "participante", "membro"]
 
                     zip_buffer = io.BytesIO()
                     with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
 
-                        for arquivo in arquivos_na_pasta:
-                            if arquivo.endswith(".docx"):
-                                caminho_arquivo = os.path.join(pasta_alvo, arquivo)
-                                nome_minusculo = arquivo.lower()
-                                is_individual = any(kw in nome_minusculo for kw in keywords_individuais)
+                        for base_dir, arquivos_iteraveis in [
+                            (pasta_alvo, arquivos_na_pasta),
+                            (pasta_modelos_raiz, arquivos_raiz)
+                        ]:
+                            for arquivo in arquivos_iteraveis:
+                                caminho_arquivo = os.path.join(base_dir, arquivo)
+                                if base_dir == pasta_modelos_raiz and caminho_arquivo == os.path.join(pasta_alvo, arquivo):
+                                    continue
+                                if not os.path.isfile(caminho_arquivo):
+                                    continue
+
+                                if not arquivo.endswith(".docx") and not arquivo.endswith(".xlsx"):
+                                    continue
+
+                                if arquivo.endswith(".docx"):
+                                    nome_minusculo = arquivo.lower()
+                                    is_individual = any(kw in nome_minusculo for kw in keywords_individuais)
 
                                 if is_individual:
                                     for membro in equipe_final:

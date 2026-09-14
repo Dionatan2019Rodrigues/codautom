@@ -132,154 +132,169 @@ async def gerar_zip_completo(payload: PayloadCompleto):
         }
 
         arquivos_na_pasta = [f for f in os.listdir(pasta_alvo) if not f.startswith("~$")]
+        pasta_modelos_raiz = os.path.join(BASE_DIR, "Modelos")
+        arquivos_raiz = []
+        if os.path.isdir(pasta_modelos_raiz):
+            arquivos_raiz = [
+                f for f in os.listdir(pasta_modelos_raiz)
+                if not f.startswith("~$") and os.path.isfile(os.path.join(pasta_modelos_raiz, f))
+            ]
         keywords_individuais = ["ch_dentro", "ch_fora", "conflito", "participante", "membro"]
 
         zip_buffer = io.BytesIO()
         with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+            for base_dir, arquivos_iteraveis in [
+                (pasta_alvo, arquivos_na_pasta),
+                (pasta_modelos_raiz, arquivos_raiz)
+            ]:
+                for arquivo in arquivos_iteraveis:
+                    caminho_arquivo = os.path.join(base_dir, arquivo)
+                    if not os.path.isfile(caminho_arquivo):
+                        continue
 
-            for arquivo in arquivos_na_pasta:
-                caminho_arquivo = os.path.join(pasta_alvo, arquivo)
-                
-                if arquivo.endswith(".docx"):
-                    nome_minusculo = arquivo.lower()
-                    is_individual = any(kw in nome_minusculo for kw in keywords_individuais)
+                    if arquivo.endswith(".docx"):
+                        nome_minusculo = arquivo.lower()
+                        is_individual = any(kw in nome_minusculo for kw in keywords_individuais)
 
-                    if is_individual:
-                        for membro in equipe_final:
-                            if not membro.get("Nome") or str(membro.get("Nome")).strip() == "": continue
-                            
-                            vinculo_membro = str(membro.get("Vínculo", "")).lower()
-                            funcao_membro = str(membro.get("Função", "")).lower()
-                            
-                            if "estudante" in vinculo_membro or "bolsista" in funcao_membro or "estagiário" in funcao_membro or "estagiario" in funcao_membro:
-                                continue 
+                        if is_individual:
+                            for membro in equipe_final:
+                                if not membro.get("Nome") or str(membro.get("Nome")).strip() == "":
+                                    continue
 
-                            ch_d_val = str(membro.get("CH_D", "0")).strip()
-                            ch_f_val = str(membro.get("CH_F", "0")).strip()
+                                vinculo_membro = str(membro.get("Vínculo", "")).lower()
+                                funcao_membro = str(membro.get("Função", "")).lower()
 
-                            if "ch_dentro" in nome_minusculo and ch_d_val in ["0", "0.0", "0,0", "-", ""]: continue
-                            if "ch_fora" in nome_minusculo and ch_f_val in ["0", "0.0", "0,0", "-", ""]: continue
+                                if "estudante" in vinculo_membro or "bolsista" in funcao_membro or "estagiário" in funcao_membro or "estagiario" in funcao_membro:
+                                    continue
 
-                            nome_limpo = re.sub(r'[^\w]', '_', str(membro.get("Nome")))[:40].strip('_')
-                            nome_doc_sem_ext = arquivo.replace(".docx", "")
+                                ch_d_val = str(membro.get("CH_D", "0")).strip()
+                                ch_f_val = str(membro.get("CH_F", "0")).strip()
 
-                            try:
-                                doc_ind = DocxTemplate(caminho_arquivo)
-                                ctx_membro = ctx_global.copy()
-                                ctx_membro.update(membro)
-                                
-                                # Alias à prova de falhas para Carga Horária e Conflito
-                                ctx_membro["participante"] = membro.get("Nome", "")
-                                ctx_membro["nome"] = membro.get("Nome", "")
-                                ctx_membro["Nome"] = membro.get("Nome", "")
-                                ctx_membro["siape"] = membro.get("SIAPE", "")
-                                ctx_membro["cargo"] = membro.get("Função", "")
-                                
-                                ctx_membro["ch_dentro"] = membro.get("CH_D", "0")
-                                ctx_membro["chdentro"] = membro.get("CH_D", "0")
-                                ctx_membro["ch_fora"] = membro.get("CH_F", "0")
-                                ctx_membro["chfora"] = membro.get("CH_F", "0")
+                                if "ch_dentro" in nome_minusculo and ch_d_val in ["0", "0.0", "0,0", "-", ""]:
+                                    continue
+                                if "ch_fora" in nome_minusculo and ch_f_val in ["0", "0.0", "0,0", "-", ""]:
+                                    continue
 
-                                chefia_nome_val = str(membro.get("Chefia Imediata", ""))
-                                ctx_membro["chefia_imediata"] = chefia_nome_val
-                                ctx_membro["nome_chefia"] = chefia_nome_val
-                                ctx_membro["nomechefia"] = chefia_nome_val
-                                ctx_membro["chefia"] = chefia_nome_val
-                                ctx_membro["chefiaimediata"] = chefia_nome_val
+                                nome_limpo = re.sub(r'[^\w]', '_', str(membro.get("Nome")))[:40].strip('_')
+                                nome_doc_sem_ext = arquivo.replace(".docx", "")
 
-                                siape_chefia_val = str(membro.get("SIAPE Chefia", ""))
-                                ctx_membro["siape_chefia"] = siape_chefia_val
-                                ctx_membro["siapechefia"] = siape_chefia_val
-                                ctx_membro["siape_chefia_imediata"] = siape_chefia_val
+                                try:
+                                    doc_ind = DocxTemplate(caminho_arquivo)
+                                    ctx_membro = ctx_global.copy()
+                                    ctx_membro.update(membro)
 
-                                doc_ind.render(ctx_membro)
-                                doc_buffer_ind = io.BytesIO()
-                                doc_ind.save(doc_buffer_ind)
-                                zip_file.writestr(f"02_Documentos_Individuais/{nome_limpo}/{nome_limpo}_{nome_doc_sem_ext}.docx", doc_buffer_ind.getvalue())
-                            except Exception as e:
-                                print(f"Aviso DOCX IND {arquivo}: {str(e)}")
-                    else:
-                        try:
-                            doc = DocxTemplate(caminho_arquivo)
-                            doc.render(ctx_global)
-                            doc_buffer = io.BytesIO()
-                            doc.save(doc_buffer)
-                            zip_file.writestr(f"01_Documentos_Gerais/{arquivo}", doc_buffer.getvalue())
-                        except Exception as e:
-                            print(f"Aviso DOCX GERAL {arquivo}: {str(e)}")
+                                    ctx_membro["participante"] = membro.get("Nome", "")
+                                    ctx_membro["nome"] = membro.get("Nome", "")
+                                    ctx_membro["Nome"] = membro.get("Nome", "")
+                                    ctx_membro["siape"] = membro.get("SIAPE", "")
+                                    ctx_membro["cargo"] = membro.get("Função", "")
 
-                elif arquivo.endswith(".xlsx"):
-                    try:
-                        wb = openpyxl.load_workbook(caminho_arquivo)
-                        ws = wb["Plano de Trabalho"] if "Plano de Trabalho" in wb.sheetnames else wb.worksheets[0]
+                                    ctx_membro["ch_dentro"] = membro.get("CH_D", "0")
+                                    ctx_membro["chdentro"] = membro.get("CH_D", "0")
+                                    ctx_membro["ch_fora"] = membro.get("CH_F", "0")
+                                    ctx_membro["chfora"] = membro.get("CH_F", "0")
 
-                        def escrever_excel(celula, valor):
-                            val_str = str(valor).strip() if valor is not None else ""
-                            if val_str in ["", "-", "None", "Não se aplica"]: val_str = None
-                            try:
-                                r_row, r_col = coordinate_to_tuple(celula)
-                                
-                                if val_str and len(val_str) > 0:
-                                    qtd_quebras = val_str.count('\n')
-                                    linhas_estimadas = (len(val_str) / 110.0) + qtd_quebras
-                                    if linhas_estimadas < 1: linhas_estimadas = 1
-                                    altura_calculada = (linhas_estimadas * 15) + 10
-                                    altura_atual = ws.row_dimensions[r_row].height
-                                    if altura_atual is None or altura_calculada > altura_atual:
-                                        ws.row_dimensions[r_row].height = altura_calculada
+                                    chefia_nome_val = str(membro.get("Chefia Imediata", ""))
+                                    ctx_membro["chefia_imediata"] = chefia_nome_val
+                                    ctx_membro["nome_chefia"] = chefia_nome_val
+                                    ctx_membro["nomechefia"] = chefia_nome_val
+                                    ctx_membro["chefia"] = chefia_nome_val
+                                    ctx_membro["chefiaimediata"] = chefia_nome_val
 
-                                for merged_range in list(ws.merged_cells.ranges):
-                                    min_col, min_row, max_col, max_row = merged_range.bounds
-                                    if min_col <= r_col <= max_col and min_row <= r_row <= max_row:
-                                        intervalo = str(merged_range)
-                                        ws.unmerge_cells(intervalo)
-                                        cel_alvo = ws.cell(row=min_row, column=min_col)
-                                        cel_alvo.value = val_str
-                                        cel_alvo.alignment = Alignment(wrap_text=True, vertical='top')
-                                        ws.merge_cells(intervalo)
-                                        return
-                                        
-                                cel_alvo = ws.cell(row=r_row, column=r_col)
-                                cel_alvo.value = val_str
-                                cel_alvo.alignment = Alignment(wrap_text=True, vertical='top')
-                            except Exception:
-                                pass
+                                    siape_chefia_val = str(membro.get("SIAPE Chefia", ""))
+                                    ctx_membro["siape_chefia"] = siape_chefia_val
+                                    ctx_membro["siapechefia"] = siape_chefia_val
+                                    ctx_membro["siape_chefia_imediata"] = siape_chefia_val
 
-                        nome_fiscal_excel = pess.fiscal if str(pess.fiscal).strip() != "" else "(Não possui)"
-                        nome_coord_adm_excel = pess.coord_adm if str(pess.coord_adm).strip() != "" else "(Não possui)"
-
-                        if d_proj.tipo_processo == "Acordo de Cooperação Técnica (ACT)":
-                            escrever_excel("C17", d_proj.titulo)
-                            escrever_excel("C19", d_proj.data_termino)
-                            escrever_excel("C20", pess.coordenador)
-                            escrever_excel("C21", pess.siape_coord)
-                            escrever_excel("C22", nome_fiscal_excel)
-                            escrever_excel("C23", pess.siape_fiscal)
-                            escrever_excel("C24", nome_coord_adm_excel)
-                            escrever_excel("C25", pess.siape_adm)
-                            escrever_excel("C26", d_proj.numero)
-                            escrever_excel("C27", d_proj.classificacao)
-                            escrever_excel("C28", d_proj.instrumento_juridico)
-                            escrever_excel("A32", d_proj.resumo)
-                            escrever_excel("A36", d_proj.objetivos)
-                            escrever_excel("A40", d_proj.justificativa)
-                            escrever_excel("A44", d_proj.resultados)
+                                    doc_ind.render(ctx_membro)
+                                    doc_buffer_ind = io.BytesIO()
+                                    doc_ind.save(doc_buffer_ind)
+                                    zip_file.writestr(f"02_Documentos_Individuais/{nome_limpo}/{nome_limpo}_{nome_doc_sem_ext}.docx", doc_buffer_ind.getvalue())
+                                except Exception as e:
+                                    print(f"Aviso DOCX IND {arquivo}: {str(e)}")
                         else:
-                            escrever_excel("C28", d_proj.titulo)
-                            escrever_excel("C33", pess.coordenador)
-                            escrever_excel("C37", nome_fiscal_excel)
-                            escrever_excel("C39", nome_coord_adm_excel)
-                            escrever_excel("C41", d_proj.numero)
-                            escrever_excel("C42", texto_instrumento_completo)
-                            escrever_excel("A46", d_proj.resumo)
-                            escrever_excel("A50", d_proj.objetivos)
-                            escrever_excel("A54", d_proj.resultados)
+                            try:
+                                doc = DocxTemplate(caminho_arquivo)
+                                doc.render(ctx_global)
+                                doc_buffer = io.BytesIO()
+                                doc.save(doc_buffer)
+                                zip_file.writestr(f"01_Documentos_Gerais/{arquivo}", doc_buffer.getvalue())
+                            except Exception as e:
+                                print(f"Aviso DOCX GERAL {arquivo}: {str(e)}")
 
-                        excel_buffer = io.BytesIO()
-                        wb.save(excel_buffer)
-                        zip_file.writestr(f"01_Documentos_Gerais/{arquivo}", excel_buffer.getvalue())
-                    except Exception as e:
-                        print(f"Erro no Excel: {str(e)}")
+                    elif arquivo.endswith(".xlsx"):
+                        try:
+                            wb = openpyxl.load_workbook(caminho_arquivo)
+                            ws = wb["Plano de Trabalho"] if "Plano de Trabalho" in wb.sheetnames else wb.worksheets[0]
+
+                            def escrever_excel(celula, valor):
+                                val_str = str(valor).strip() if valor is not None else ""
+                                if val_str in ["", "-", "None", "Não se aplica"]:
+                                    val_str = None
+                                try:
+                                    r_row, r_col = coordinate_to_tuple(celula)
+                                    if val_str and len(val_str) > 0:
+                                        qtd_quebras = val_str.count('\n')
+                                        linhas_estimadas = (len(val_str) / 110.0) + qtd_quebras
+                                        if linhas_estimadas < 1:
+                                            linhas_estimadas = 1
+                                        altura_calculada = (linhas_estimadas * 15) + 10
+                                        altura_atual = ws.row_dimensions[r_row].height
+                                        if altura_atual is None or altura_calculada > altura_atual:
+                                            ws.row_dimensions[r_row].height = altura_calculada
+
+                                    for merged_range in list(ws.merged_cells.ranges):
+                                        min_col, min_row, max_col, max_row = merged_range.bounds
+                                        if min_col <= r_col <= max_col and min_row <= r_row <= max_row:
+                                            intervalo = str(merged_range)
+                                            ws.unmerge_cells(intervalo)
+                                            cel_alvo = ws.cell(row=min_row, column=min_col)
+                                            cel_alvo.value = val_str
+                                            cel_alvo.alignment = Alignment(wrap_text=True, vertical='top')
+                                            ws.merge_cells(intervalo)
+                                            return
+
+                                    cel_alvo = ws.cell(row=r_row, column=r_col)
+                                    cel_alvo.value = val_str
+                                    cel_alvo.alignment = Alignment(wrap_text=True, vertical='top')
+                                except Exception:
+                                    pass
+
+                            nome_fiscal_excel = pess.fiscal if str(pess.fiscal).strip() != "" else "(Não possui)"
+                            nome_coord_adm_excel = pess.coord_adm if str(pess.coord_adm).strip() != "" else "(Não possui)"
+
+                            if d_proj.tipo_processo == "Acordo de Cooperação Técnica (ACT)":
+                                escrever_excel("C17", d_proj.titulo)
+                                escrever_excel("C19", d_proj.data_termino)
+                                escrever_excel("C20", pess.coordenador)
+                                escrever_excel("C21", pess.siape_coord)
+                                escrever_excel("C22", nome_fiscal_excel)
+                                escrever_excel("C23", pess.siape_fiscal)
+                                escrever_excel("C24", nome_coord_adm_excel)
+                                escrever_excel("C25", pess.siape_adm)
+                                escrever_excel("C26", d_proj.numero)
+                                escrever_excel("C27", d_proj.classificacao)
+                                escrever_excel("C28", d_proj.instrumento_juridico)
+                                escrever_excel("A32", d_proj.resumo)
+                                escrever_excel("A36", d_proj.objetivos)
+                                escrever_excel("A40", d_proj.justificativa)
+                                escrever_excel("A44", d_proj.resultados)
+                            else:
+                                escrever_excel("C28", d_proj.titulo)
+                                escrever_excel("C33", pess.coordenador)
+                                escrever_excel("C37", nome_fiscal_excel)
+                                escrever_excel("C39", nome_coord_adm_excel)
+                                escrever_excel("C41", d_proj.numero)
+                                escrever_excel("C42", texto_instrumento_completo)
+                                escrever_excel("A46", d_proj.resumo)
+                                escrever_excel("A50", d_proj.objetivos)
+                                escrever_excel("A54", d_proj.resultados)
+
+                            excel_buffer = io.BytesIO()
+                            wb.save(excel_buffer)
+                            zip_file.writestr(f"01_Documentos_Gerais/{arquivo}", excel_buffer.getvalue())
+                        except Exception as e:
+                            print(f"Erro no Excel: {str(e)}")
 
             # === O SEGREDO ESTÁ NO RECUO DESSAS LINHAS ===
         
