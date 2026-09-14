@@ -5,7 +5,7 @@ import re
 import requests
 
 # --- CONFIGURAÇÃO DA PÁGINA (FORÇANDO TEMA CLARO) ---
-st.set_page_config(page_title="Raichu Pro ⚡", layout="wide", page_icon="⚡", initial_sidebar_state="auto")
+st.set_page_config(page_title="AutoDocs", layout="wide", page_icon="./assets/favicon.png", initial_sidebar_state="auto")
 
 # --- ESTILIZAÇÃO CUSTOMIZADA (MODO CLARO + UPLOAD ESTILIZADO) ---
 st.markdown(
@@ -22,24 +22,24 @@ st.markdown(
             color: #2C3E50 !important;
         }
 
-        /* Botões principais com o Laranja Elétrico do Raichu */
+        /* Botões principais com o Azul Corporativo do AutoDocs */
         .stButton > button {
-            background-color: #FF8C00 !important;
+            background-color: #1E3A8A !important;
             color: white !important;
             font-weight: bold !important;
             border-radius: 8px !important;
-            border: 2px solid #E67E22 !important;
+            border: 2px solid #2563EB !important;
         }
         .stButton > button:hover {
-            background-color: #E67E22 !important;
-            border-color: #D35400 !important;
+            background-color: #2563EB !important;
+            border-color: #3B82F6 !important;
             color: white !important;
         }
 
         /* Estilização Profissional da Caixa de Upload de PDF */
         [data-testid="stFileUploader"] {
             background-color: #FFFFFF !important;
-            border: 2px dashed #D35400 !important;
+            border: 2px dashed #2563EB !important;
             border-radius: 10px !important;
             padding: 15px !important;
         }
@@ -52,9 +52,9 @@ st.markdown(
         }
 
         /* Cards e balões informativos em fundo branco com borda elegante */
-        .raichu-card {
+        .autodocs-card {
             background-color: #FFFFFF;
-            border-left: 5px solid #FF8C00;
+            border-left: 5px solid #1E3A8A;
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 20px;
@@ -63,8 +63,8 @@ st.markdown(
             border-right: 1px solid #EAECEE;
             border-bottom: 1px solid #EAECEE;
         }
-        .raichu-title {
-            color: #D35400 !important;
+        .autodocs-title {
+            color: #1E3A8A !important;
             font-weight: bold;
         }
     </style>
@@ -77,7 +77,7 @@ def limpar_texto_bloco(txt):
     if not txt: return ""
     linhas = txt.split('\n')
     linhas_limpas = []
-    for l in linhas:
+    for l in lines:
         l_strip = l.strip()
         if re.search(r'(?i)Página \d+ de \d+', l_strip): continue
         if re.search(r'(?i)UNIVERSIDADE FEDERAL DE SANTA MARIA', l_strip): continue
@@ -117,14 +117,14 @@ def identificar_instrumento_juridico(texto):
 # ==============================================================================
 # NAVEGAÇÃO PRINCIPAL (ABAS)
 # ==============================================================================
-aba_home, aba_gerador = st.tabs(["⚡ Início & Sobre", "🚀 Gerador de Documentos"])
+aba_home, aba_gerador = st.tabs(["Home", "Gerador de Documentos"])
 
 # ==============================================================================
-# TELA 1: HOME / APRESENTAÇÃO DO RAICHU PRO
+# TELA 1: HOME / APRESENTAÇÃO DO AUTODOCS
 # ==============================================================================
 with aba_home:
-    st.markdown("<h1 style='color: #FF8C00;'>⚡ Bem-vindo ao Raichu Pro</h1>", unsafe_allow_html=True)
-    st.markdown("### Geração Inteligente de Documentação de Projetos")
+    st.markdown("<h1 style='color: #1E3A8A;'>AutoDocs</h1>", unsafe_allow_html=True)
+    st.markdown("### Geração Inteligente e Ampliada de Documentação de Projetos")
     
     st.markdown("---")
     
@@ -133,22 +133,23 @@ with aba_home:
     with col_info1:
         st.markdown(
             """
-            <div class="raichu-card">
-                <h3 class="raichu-title">🎯 Objetivo do Sistema</h3>
-                <p>O <b>Raichu Pro</b> foi desenvolvido para eliminar o trabalho manual e repetitivo na criação de documentações acadêmicas e administrativas de projetos. Através da leitura inteligente de relatórios em PDF, o sistema extrai dados de títulos, equipes, resumos e prazos, gerando instantaneamente pacotes completos em formatos <b>Word (.docx)</b> e <b>Excel (.xlsx)</b> perfeitamente formatados.</p>
+            <div class="autodocs-card">
+                <h3 class="autodocs-title">Objetivo do sistema</h3>
+                <p>O <b>AutoDocs</b> foi desenvolvido para eliminar o trabalho manual e repetitivo na criação de documentações institucionais, acadêmicas e administrativas. Através da leitura inteligente de relatórios em PDF, o sistema extrai dados estruturados como títulos, equipes, resumos e prazos, gerando instantaneamente pacotes de arquivos em formatos <b>Word (.docx)</b> e <b>Excel (.xlsx)</b> perfeitamente formatados.</p>
+                <p>Diferenciando-se por sua capacidade de expansão, o AutoDocs amplia o escopo tradicional de gerenciamento para suportar uma gama dinâmica de novos tipos e formatos de documentos sob demanda.</p>
             </div>
             """,
             unsafe_allow_html=True
         )
         
-        st.markdown("### 📊 Opções de Instrumentos Jurídicos Suportados")
+        st.markdown("### Instrumentos jurídicos e documentos suportados")
         
         b_col1, b_col2, b_col3 = st.columns(3)
         with b_col1:
             st.markdown(
                 """
-                <div class="raichu-card" style="border-left-color: #F1C40F;">
-                    <h4 style='color: #D35400;'>ACT</h4>
+                <div class="autodocs-card" style="border-left-color: #3B82F6;">
+                    <h4 style='color: #1E3A8A;'>ACT</h4>
                     <p style='font-size: 13px;'><b>Acordo de Cooperação Técnica</b><br>Foco em cooperações acadêmicas sem repasse financeiro direto ou fundações obrigatórias.</p>
                 </div>
                 """,
@@ -157,8 +158,8 @@ with aba_home:
         with b_col2:
             st.markdown(
                 """
-                <div class="raichu-card" style="border-left-color: #FF8C00;">
-                    <h4 style='color: #D35400;'>CG</h4>
+                <div class="autodocs-card" style="border-left-color: #1E3A8A;">
+                    <h4 style='color: #1E3A8A;'>CG</h4>
                     <p style='font-size: 13px;'><b>Contrato Global</b><br>Gerenciamento integrado com fundações de apoio parceiras (FATEC, FUNDEP, etc.).</p>
                 </div>
                 """,
@@ -167,24 +168,37 @@ with aba_home:
         with b_col3:
             st.markdown(
                 """
-                <div class="raichu-card" style="border-left-color: #E67E22;">
-                    <h4 style='color: #D35400;'>AP</h4>
+                <div class="autodocs-card" style="border-left-color: #64748B;">
+                    <h4 style='color: #1E3A8A;'>AP</h4>
                     <p style='font-size: 13px;'><b>Acordo de Parceria</b><br>Projetos voltados à inovação, P&D e parcerias estratégicas institucionais.</p>
                 </div>
                 """,
                 unsafe_allow_html=True
             )
+            
+        st.markdown(
+            """
+            <div class="autodocs-card" style="border-left-color: #10B981; background-color: #F0FDF4;">
+                <h4 style='color: #065F46;'>Em desenvolvimento: Novos modelos de documentos</h4>
+                <p style='font-size: 13px; color: #065F46;'>A arquitetura do AutoDocs está sendo expandida para além dos instrumentos iniciais (ACT, CG, AP). Novos fluxos de automação de documentos fiscais, administrativos e acadêmicos customizados estão sendo integrados à plataforma.</p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
     with col_info2:
         st.markdown(
             """
-            <div class="raichu-card">
-                <h4 class="raichu-title">ℹ️ Informações da Versão</h4>
-                <p><b>Versão:</b> 2.1.0 (FastAPI Edition)</p>
-                <p><b>Desenvolvido por:</b> Julio Maia dos Santos - Estudante de graduação em Engenharia Elétrica  👨‍💻⚡</p>
-                <p><b>Arquitetura:</b> Decoupled (Front-End Streamlit + Back-End FastAPI)</p>
+            <div class="autodocs-card">
+                <h4 class="autodocs-title">Informações do Software</h4>
+                <p><b>Software:</b> AutoDocs</p>
+                <p><b>Versão:</b> 1.0.0</p>
+                <p><b>Arquitetura:</b>(Front-End Streamlit + Back-End FastAPI)</p>
                 <hr style='border-color: #EAECEE;'>
-                <p style='font-size: 12px; color: #666;'>⚡ Sistema otimizado para alta performance e precisão em relatórios institucionais.</p>
+                <p style='font-size: 11px; color: #64748B; line-height: 1.4;'>
+                    <b>Créditos e Referências:</b><br>
+                    Este software foi projetado e baseado nos conceitos e engenharia técnica originais do projeto <a href="https://codautom-livl8x6nrrzdzrcgapgfz7.streamlit.app/" style="font-style: italic;">Raichu Pro (v2.1.0)</a> desenvolvido por Julio Maia dos Santos.
+                </p>
             </div>
             """,
             unsafe_allow_html=True
@@ -527,4 +541,4 @@ with aba_gerador:
                     st.error("❌ Erro de conexão! Certifique-se de que o FastAPI está rodando na rede.")
 
 st.markdown("<br><hr>", unsafe_allow_html=True)
-st.markdown("<div style='text-align: center; color: #666666; padding: 10px; font-size: 14px;'>⚡ <b>Raichu Pro V2.1.0 (FastAPI Edition)</b> | Alterado por Dionatan Rodrigues</div>", unsafe_allow_html=True)
+st.markdown("<div style='text-align: center; color: #666666; padding: 10px; font-size: 14px;'><b>AutoDocs V1.0.0</b> | Desenvolvido por Dionatan Rodrigues</div>", unsafe_allow_html=True)
