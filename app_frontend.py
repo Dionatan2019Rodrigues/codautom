@@ -178,9 +178,21 @@ with aba_home:
             
         st.markdown(
             """
+            <div class="autodocs-card" style="border-left-color: #111184;">
+                <h4 style='color: #065F46;'>CF</h4>
+                <p style='font-size: 13px;'><b>Convênios com fundações</b>
+                <br>Realização de projetos provenientes de recursos públicos para a viabilização de execução de projetos</p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            """
             <div class="autodocs-card" style="border-left-color: #10B981; background-color: #F0FDF4;">
                 <h4 style='color: #065F46;'>Em desenvolvimento: Novos modelos de documentos</h4>
-                <p style='font-size: 13px; color: #065F46;'>A arquitetura do AutoDocs está sendo expandida para além dos instrumentos iniciais (ACT, CG, AP). Novos fluxos de automação de documentos fiscais, administrativos e acadêmicos customizados estão sendo integrados à plataforma.</p>
+                <p style='font-size: 13px; color: #065F46;'>A arquitetura do AutoDocs está sendo expandida para além dos instrumentos iniciais (ACT, CG, AP). 
+                Novos fluxos de automação de documentos fiscais, administrativos e acadêmicos customizados estão sendo integrados à plataforma.</p>
             </div>
             """,
             unsafe_allow_html=True
