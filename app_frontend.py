@@ -75,7 +75,7 @@ st.markdown(
 # --- FUNÇÕES DE APOIO ---
 def limpar_texto_bloco(txt):
     if not txt: return ""
-    linhas = txt.split('\n')
+    lines = txt.split('\n')
     linhas_limpas = []
     for l in lines:
         l_strip = l.strip()
