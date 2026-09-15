@@ -35,6 +35,20 @@ class DadosProjeto(BaseModel):
     tipo_processo: str = ""
     fundacao_sigla: str = ""
     status_fund: str = ""
+    cnpj_fundacao: str = ""
+    endereco_fundacao: str = ""
+    cidade_fundacao: str = ""
+    uf_fundacao: str = ""
+    cep_fundacao: str = ""
+    telefone_fundacao: str = ""
+    nome_dirigente_fundacao: str = ""
+    cpf_dirigente_fundacao: str = ""
+    rg_dirigente_fundacao: str = ""
+    funcao_dirigente_fundacao: str = ""
+    percentual_custo: float = 0.0
+    percentual_investimento: float = 0.0
+    percentual_despesas_fundacao: float = 0.0
+    percentual_despesas_ufsm: float = 0.0
     classificacoes_raw: list = []
 
 class Pessoas(BaseModel):
@@ -128,7 +142,21 @@ async def gerar_zip_completo(payload: PayloadCompleto):
             "justificativa_fund": d_proj.justificativa_fund, "justificativafund": d_proj.justificativa_fund,
             "diretor_unidade": pess.diretor, "diretorunidade": pess.diretor,
             "siape_diretor": pess.siape_diretor, "siapediretor": pess.siape_diretor,
-            "sigla_fundacao": fund_sigla
+            "sigla_fundacao": fund_sigla,
+            "cnpj_fundacao": d_proj.cnpj_fundacao,
+            "endereco_fundacao": d_proj.endereco_fundacao,
+            "cidade_fundacao": d_proj.cidade_fundacao,
+            "uf_fundacao": d_proj.uf_fundacao,
+            "cep_fundacao": d_proj.cep_fundacao,
+            "telefone_fundacao": d_proj.telefone_fundacao,
+            "nome_dirigente_fundacao": d_proj.nome_dirigente_fundacao,
+            "cpf_dirigente_fundacao": d_proj.cpf_dirigente_fundacao,
+            "rg_dirigente_fundacao": d_proj.rg_dirigente_fundacao,
+            "funcao_dirigente_fundacao": d_proj.funcao_dirigente_fundacao,
+            "percentual_custo": d_proj.percentual_custo,
+            "percentual_investimento": d_proj.percentual_investimento,
+            "percentual_despesas_fundacao": d_proj.percentual_despesas_fundacao,
+            "percentual_despesas_ufsm": d_proj.percentual_despesas_ufsm,
         }
 
         arquivos_na_pasta = [f for f in os.listdir(pasta_alvo) if not f.startswith("~$")]

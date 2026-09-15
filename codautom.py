@@ -137,10 +137,62 @@ with aba_gerador:
         arquivo_financeiro = st.file_uploader("2. Insira os Dados Financeiros (.XLSX) (Opcional)", type=["xlsx"])
 
     fundacoes_dados = {
-        "FATEC": {"fundacao": "FATEC - Fundação de Apoio à Tecnologia e Ciência", "sigla_fundacao": "FATEC"},
-        "FUNDEP": {"fundacao": "FUNDEP - Fundação de Desenvolvimento da Pesquisa", "sigla_fundacao": "FUNDEP"},
-        "FAURGS": {"fundacao": "FAURGS - Fundação de Apoio à Universidade Federal do Rio Grande do Sul", "sigla_fundacao": "FAURGS"},
-        "FDMS": {"fundacao": "FDMS - Fundação Delfim Mendes Silveira", "sigla_fundacao": "FDMS"}
+        "FATEC": {
+            "fundacao": "FATEC - Fundação de Apoio à Tecnologia e Ciência",
+            "sigla_fundacao": "FATEC",
+            "cnpj_fundacao": "",
+            "endereco_fundacao": "",
+            "cidade_fundacao": "",
+            "uf_fundacao": "",
+            "cep_fundacao": "",
+            "telefone_fundacao": "",
+            "nome_dirigente_fundacao": "",
+            "cpf_dirigente_fundacao": "",
+            "rg_dirigente_fundacao": "",
+            "funcao_dirigente_fundacao": ""
+        },
+        "FUNDEP": {
+            "fundacao": "FUNDEP - Fundação de Desenvolvimento da Pesquisa",
+            "sigla_fundacao": "FUNDEP",
+            "cnpj_fundacao": "",
+            "endereco_fundacao": "",
+            "cidade_fundacao": "",
+            "uf_fundacao": "",
+            "cep_fundacao": "",
+            "telefone_fundacao": "",
+            "nome_dirigente_fundacao": "",
+            "cpf_dirigente_fundacao": "",
+            "rg_dirigente_fundacao": "",
+            "funcao_dirigente_fundacao": ""
+        },
+        "FAURGS": {
+            "fundacao": "FAURGS - Fundação de Apoio à Universidade Federal do Rio Grande do Sul",
+            "sigla_fundacao": "FAURGS",
+            "cnpj_fundacao": "",
+            "endereco_fundacao": "",
+            "cidade_fundacao": "",
+            "uf_fundacao": "",
+            "cep_fundacao": "",
+            "telefone_fundacao": "",
+            "nome_dirigente_fundacao": "",
+            "cpf_dirigente_fundacao": "",
+            "rg_dirigente_fundacao": "",
+            "funcao_dirigente_fundacao": ""
+        },
+        "FDMS": {
+            "fundacao": "FDMS - Fundação Delfim Mendes Silveira",
+            "sigla_fundacao": "FDMS",
+            "cnpj_fundacao": "",
+            "endereco_fundacao": "",
+            "cidade_fundacao": "",
+            "uf_fundacao": "",
+            "cep_fundacao": "",
+            "telefone_fundacao": "",
+            "nome_dirigente_fundacao": "",
+            "cpf_dirigente_fundacao": "",
+            "rg_dirigente_fundacao": "",
+            "funcao_dirigente_fundacao": ""
+        }
     }
 
     dados_extraidos = {
@@ -450,7 +502,24 @@ with aba_gerador:
 
         if tipo_processo == "Acordo de Cooperação Técnica (ACT)":
             st.info("💡 Processos do tipo **ACT** não necessitam de Fundação de Apoio.")
-            status_fund, fund_sigla, ctx_fundacao = "Não possui", "ACT", {}
+            status_fund, fund_sigla, ctx_fundacao = "Não possui", "ACT", {
+                "fundacao": "",
+                "sigla_fundacao": "ACT",
+                "cnpj_fundacao": "",
+                "endereco_fundacao": "",
+                "cidade_fundacao": "",
+                "uf_fundacao": "",
+                "cep_fundacao": "",
+                "telefone_fundacao": "",
+                "nome_dirigente_fundacao": "",
+                "cpf_dirigente_fundacao": "",
+                "rg_dirigente_fundacao": "",
+                "funcao_dirigente_fundacao": "",
+                "percentual_custo": 0.0,
+                "percentual_investimento": 0.0,
+                "percentual_despesas_fundacao": 0.0,
+                "percentual_despesas_ufsm": 0.0,
+            }
         else:
             fund_sugerida = dados_extraidos.get("fundacao_sugerida", "FATEC")
 
@@ -461,11 +530,50 @@ with aba_gerador:
             if fundacao_correta == "Sim":
                 fund_sigla = fund_sugerida
                 status_fund = "Já definida"
-                ctx_fundacao = fundacoes_dados[fund_sigla]
+                ctx_fundacao = fundacoes_dados[fund_sigla].copy()
             else:
                 fund_sigla = st.selectbox("Por favor, selecione a fundação correta abaixo:", list(fundacoes_dados.keys()))
                 status_fund = "Já definida"
-                ctx_fundacao = fundacoes_dados[fund_sigla]
+                ctx_fundacao = fundacoes_dados[fund_sigla].copy()
+
+            with st.expander("🏛️ Dados da Fundação e Uso do Valor Recebido", expanded=True):
+                col_fund1, col_fund2 = st.columns(2)
+                with col_fund1:
+                    fund_cnpj = st.text_input("CNPJ da Fundação", value=ctx_fundacao.get("cnpj_fundacao", ""))
+                    fund_endereco = st.text_input("Endereço da Fundação", value=ctx_fundacao.get("endereco_fundacao", ""))
+                    fund_cidade = st.text_input("Cidade da Fundação", value=ctx_fundacao.get("cidade_fundacao", ""))
+                    fund_uf = st.text_input("UF da Fundação", value=ctx_fundacao.get("uf_fundacao", ""))
+                    fund_cep = st.text_input("CEP da Fundação", value=ctx_fundacao.get("cep_fundacao", ""))
+                    fund_telefone = st.text_input("Telefone da Fundação", value=ctx_fundacao.get("telefone_fundacao", ""))
+                with col_fund2:
+                    fund_nome_dirigente = st.text_input("Nome do dirigente da Fundação", value=ctx_fundacao.get("nome_dirigente_fundacao", ""))
+                    fund_cpf_dirigente = st.text_input("CPF do dirigente da Fundação", value=ctx_fundacao.get("cpf_dirigente_fundacao", ""))
+                    fund_rg_dirigente = st.text_input("RG do dirigente da Fundação", value=ctx_fundacao.get("rg_dirigente_fundacao", ""))
+                    fund_funcao_dirigente = st.text_input("Função do dirigente da Fundação", value=ctx_fundacao.get("funcao_dirigente_fundacao", ""))
+
+                st.markdown("### Distribuição do valor recebido")
+                col_pct1, col_pct2, col_pct3, col_pct4 = st.columns(4)
+                pct_custo = col_pct1.number_input("% Custo", min_value=0.0, max_value=100.0, value=0.0, step=0.1)
+                pct_investimento = col_pct2.number_input("% Investimento", min_value=0.0, max_value=100.0, value=0.0, step=0.1)
+                pct_desp_fundacao = col_pct3.number_input("% Despesas da Fundação", min_value=0.0, max_value=100.0, value=0.0, step=0.1)
+                pct_desp_ufsm = col_pct4.number_input("% Despesas da UFSM", min_value=0.0, max_value=100.0, value=0.0, step=0.1)
+
+                ctx_fundacao.update({
+                    "cnpj_fundacao": fund_cnpj,
+                    "endereco_fundacao": fund_endereco,
+                    "cidade_fundacao": fund_cidade,
+                    "uf_fundacao": fund_uf,
+                    "cep_fundacao": fund_cep,
+                    "telefone_fundacao": fund_telefone,
+                    "nome_dirigente_fundacao": fund_nome_dirigente,
+                    "cpf_dirigente_fundacao": fund_cpf_dirigente,
+                    "rg_dirigente_fundacao": fund_rg_dirigente,
+                    "funcao_dirigente_fundacao": fund_funcao_dirigente,
+                    "percentual_custo": pct_custo,
+                    "percentual_investimento": pct_investimento,
+                    "percentual_despesas_fundacao": pct_desp_fundacao,
+                    "percentual_despesas_ufsm": pct_desp_ufsm,
+                })
 
         st.markdown("---")
         st.markdown("### 3️⃣ Passo 3: Conferência e Edição de Dados")

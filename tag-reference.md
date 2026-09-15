@@ -31,6 +31,20 @@ Estas são as tags que o sistema usa de forma direta nos documentos Word e que d
 - `diretor_unidade`
 - `siape_diretor`
 - `sigla_fundacao`
+- `cnpj_fundacao`
+- `endereco_fundacao`
+- `cidade_fundacao`
+- `uf_fundacao`
+- `cep_fundacao`
+- `telefone_fundacao`
+- `nome_dirigente_fundacao`
+- `cpf_dirigente_fundacao`
+- `rg_dirigente_fundacao`
+- `funcao_dirigente_fundacao`
+- `percentual_custo`
+- `percentual_investimento`
+- `percentual_despesas_fundacao`
+- `percentual_despesas_ufsm`
 
 ### Tags por participante / membro obrigatórias
 
