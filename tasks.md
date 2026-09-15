@@ -4,7 +4,7 @@
     [](future module)ACT  com recurso público
 
 
-[]Discover all tags of variables there are currently in the software
+[x]Discover all tags of variables there are currently in the software
 []add new tags with the information missing
 []Create docs models with tags of variable
 []replice the architecture
